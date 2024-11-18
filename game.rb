@@ -29,6 +29,7 @@ class Game
       coordinates = gets.chomp.upcase
     end
     put_sign(coordinates, grid)
+    puts GridRenderer.render(grid)
   end
 
   def empty?(coordinates, grid)
@@ -61,18 +62,5 @@ class Game
                             'C') == grid.get(2, 'B') && grid.get(1, 'C') == grid.get(3, 'A') && !grid.get(1, 'C').nil?
 
     false
-  end
-
-  def play_game(grid)
-    puts GridRenderer.render(grid)
-    loop do
-      play_round(grid)
-      change_player
-      puts GridRenderer.render(grid)
-      if win?(grid)
-        puts "Congratulations Player #{@active_player}, you won!"
-        break
-      end
-    end
   end
 end
