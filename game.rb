@@ -1,38 +1,38 @@
+require_relative 'grid'
+require_relative 'grid_renderer'
+
 class Game
   attr_accessor :active_player
+  attr_reader :grid
 
-  @active_player
   def initialize
     @active_player = 'X'
+    @grid = Grid.new
   end
 
-  def change_player
-    @active_player = if @active_player == 'X'
-                       'O'
-                     else
-                       'X'
-                     end
-  end
-
-  def put_sign(coordinates, grid)
+  def update(coordinates)
     coordinates = coordinates.split('')
     column = coordinates[0]
     row = coordinates[1].to_i
     grid.write(row, column, @active_player)
+    change_player
   end
 
-  def play_round(grid)
+  def take_input
     puts "Player #{@active_player} please choose your spot"
     coordinates = gets.chomp.upcase
-    until valid?(coordinates) && empty?(coordinates, grid)
+    until valid?(coordinates) && empty?(coordinates)
       puts 'Please choose a valid spot'
       coordinates = gets.chomp.upcase
     end
-    put_sign(coordinates, grid)
+    coordinates
+  end
+
+  def render
     puts GridRenderer.render(grid)
   end
 
-  def empty?(coordinates, grid)
+  def empty?(coordinates)
     coordinates = coordinates.split('')
     column = coordinates[0]
     row = coordinates[1].to_i
@@ -43,7 +43,7 @@ class Game
     %w[A1 A2 A3 B1 B2 B3 C1 C2 C3].include?(coordinates)
   end
 
-  def win?(grid)
+  def win?
     return true if grid.get(1,
                             'A') == grid.get(1, 'B') && grid.get(1, 'A') == grid.get(1, 'C') && !grid.get(1, 'A').nil?
     return true if grid.get(2,
@@ -62,5 +62,13 @@ class Game
                             'C') == grid.get(2, 'B') && grid.get(1, 'C') == grid.get(3, 'A') && !grid.get(1, 'C').nil?
 
     false
+  end
+
+  def change_player
+    @active_player = if @active_player == 'X'
+                       'O'
+                     else
+                       'X'
+                     end
   end
 end

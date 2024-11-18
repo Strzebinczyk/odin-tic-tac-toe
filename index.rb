@@ -1,14 +1,12 @@
-require_relative 'grid_renderer'
-require_relative 'grid'
 require_relative 'game'
 
 game = Game.new
-grid = Grid.new
 
-puts GridRenderer.render(grid)
 loop do
-  game.play_round(grid)
-  if game.win?(grid)
+  game.render
+  coordinates = game.take_input
+  game.update(coordinates)
+  if game.win?
     puts "Congratulations Player #{game.active_player}, you won!"
     break
   end
