@@ -1,9 +1,7 @@
-require 'game'
+require_relative 'grid_renderer'
+require_relative 'grid'
+require_relative 'game'
 
 game = Game.new
-
-loop do
-  player_input = game.get_player_input
-  game.update(player_input)
-  game.render
-end
+grid = Grid.new
+game.play_game(grid)

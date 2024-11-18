@@ -1,55 +1,78 @@
 class Game
-  def display_grid
-    puts @columns
-    puts @rows[1].values.join
-    puts @line
-    puts @rows[2].values.join
-    puts @line
-    puts @rows[3].values.join
+  attr_accessor :active_player
+
+  @active_player
+  def initialize
+    @active_player = 'X'
   end
 
-  def put_sign(coordinates, player)
+  def change_player
+    @active_player = if @active_player == 'X'
+                       'O'
+                     else
+                       'X'
+                     end
+  end
+
+  def put_sign(coordinates, grid)
     coordinates = coordinates.split('')
     column = coordinates[0]
     row = coordinates[1].to_i
-    if player == 'O'
-      @rows[row][column] = 'O'
-    elsif player == 'X'
-      @rows[row][column] = 'X'
-    end
+    grid.write(row, column, @active_player)
   end
 
-  def play_round(player)
-    puts "Player #{player} please choose your spot"
+  def play_round(grid)
+    puts "Player #{@active_player} please choose your spot"
     coordinates = gets.chomp.upcase
-    until valid?(coordinates) && empty?(coordinates)
+    until valid?(coordinates) && empty?(coordinates, grid)
       puts 'Please choose a valid spot'
       coordinates = gets.chomp.upcase
     end
-    put_sign(coordinates, player)
+    put_sign(coordinates, grid)
   end
 
-  def empty?(coordinates)
+  def empty?(coordinates, grid)
     coordinates = coordinates.split('')
     column = coordinates[0]
     row = coordinates[1].to_i
-    rows[row][column].nil?
+    grid.get(row, column).nil?
   end
 
   def valid?(coordinates)
     %w[A1 A2 A3 B1 B2 B3 C1 C2 C3].include?(coordinates)
   end
 
-  def win?
-    return true if rows[1]['A'] == rows[1]['B'] && rows[1]['A'] == rows[1]['C'] && !rows[1]['A'].nil?
-    return true if rows[2]['A'] == rows[2]['B'] && rows[2]['A'] == rows[2]['C'] && !rows[2]['A'].nil?
-    return true if rows[3]['A'] == rows[3]['B'] && rows[3]['A'] == rows[3]['C'] && !rows[3]['A'].nil?
-    return true if rows[1]['A'] == rows[2]['A'] && rows[1]['A'] == rows[3]['A'] && !rows[1]['A'].nil?
-    return true if rows[1]['B'] == rows[2]['B'] && rows[1]['B'] == rows[3]['B'] && !rows[1]['B'].nil?
-    return true if rows[1]['C'] == rows[2]['C'] && rows[1]['C'] == rows[3]['C'] && !rows[1]['C'].nil?
-    return true if rows[1]['A'] == rows[2]['B'] && rows[1]['A'] == rows[3]['C'] && !rows[1]['A'].nil?
-    return true if rows[1]['C'] == rows[2]['B'] && rows[1]['C'] == rows[3]['A'] && !rows[1]['C'].nil?
+  def win?(grid)
+    return true if grid.get(1,
+                            'A') == grid.get(1, 'B') && grid.get(1, 'A') == grid.get(1, 'C') && !grid.get(1, 'A').nil?
+    return true if grid.get(2,
+                            'A') == grid.get(2, 'B') && grid.get(2, 'A') == grid.get(2, 'C') && !grid.get(2, 'A').nil?
+    return true if grid.get(3,
+                            'A') == grid.get(3, 'B') && grid.get(3, 'A') == grid.get(3, 'C') && !grid.get(3, 'A').nil?
+    return true if grid.get(1,
+                            'A') == grid.get(2, 'A') && grid.get(1, 'A') == grid.get(3, 'A') && !grid.get(1, 'A').nil?
+    return true if grid.get(1,
+                            'B') == grid.get(2, 'B') && grid.get(1, 'B') == grid.get(3, 'B') && !grid.get(1, 'B').nil?
+    return true if grid.get(1,
+                            'C') == grid.get(2, 'C') && grid.get(1, 'C') == grid.get(3, 'C') && !grid.get(1, 'C').nil?
+    return true if grid.get(1,
+                            'A') == grid.get(2, 'B') && grid.get(1, 'A') == grid.get(3, 'C') && !grid.get(1, 'A').nil?
+    return true if grid.get(1,
+                            'C') == grid.get(2, 'B') && grid.get(1, 'C') == grid.get(3, 'A') && !grid.get(1, 'C').nil?
 
     false
+  end
+
+  def play_game(grid)
+    puts GridRenderer.render(grid)
+    loop do
+      play_round(grid)
+      change_player
+      puts GridRenderer.render(grid)
+      if win?(grid)
+        puts "Congratulations Player #{@active_player}, you won!"
+        break
+      end
+    end
   end
 end
